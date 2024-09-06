@@ -53,9 +53,10 @@ jobs:
       - name: Publish
         uses: changesets/action@v1
         with:
+          version: pnpm exec changeset version
+          commit: '[ci] chore: release version'
+          title: '[ci] chore: release version'
           publish: pnpm run pub
-          commit: '[ci] chore(release)'
-          title: '[ci] chore(release)'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_AUTH_TOKEN: ${{secrets.npm_token}}
