@@ -2,7 +2,9 @@
   "name": "tonkit",
   "version": "0.0.1",
   "description": "A toolkit for ton blockchain",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "dev": "tsc --watch",
     "build": "tsc",
@@ -10,7 +12,8 @@
     "versionup:patch": "npm version patch --git-tag-version false",
     "versionup:minor": "npm version minor --git-tag-version false",
     "versionup:major": "npm version major --git-tag-version false",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "test:watch": "jest --watchAll"
   },
   "files": [
     "dist"
@@ -20,11 +23,16 @@
     "blockchain"
   ],
   "author": "hstarorg",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@types/jest": "^29.5.12",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
     "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "@ton/core": "^0.57.0",
+    "@ton/crypto": "^3.3.0",
+    "@ton/ton": "^15.0.0"
   }
 }
