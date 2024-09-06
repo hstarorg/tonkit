@@ -51,10 +51,12 @@ jobs:
           git config --global user.email 'hm910705@163.com'
 
       - name: Publish
-        run: |
-          echo "//registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN" > .npmrc
-          pnpm run versionup:${{ github.event.inputs.versionUp }}
-          pnpm run pub
+        uses: changesets/action@v1
+        with:        
+          version: pnpm exec changeset version
+          publish: pnpm exec changeset publish
+          commit: '[ci] chore(release)'
+          title: '[ci] chore(release)'
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_AUTH_TOKEN: ${{secrets.npm_token}}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
