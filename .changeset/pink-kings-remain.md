@@ -1,0 +1,5 @@
+---
+"tonkit": patch
+---
+
+Update workflow

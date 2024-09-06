@@ -11,7 +11,10 @@ export const WalletContractMap: Record<
 
 export const APIEndpoints = {
   v2: {
-    tonhub: {},
+    toncenter: {
+      mainnet: 'https://toncenter.com/api/v2/jsonRPC',
+      testnet: 'https://testnet.toncenter.com/api/v2/jsonRPC',
+    },
   },
   v4: {
     tonhub: {

@@ -13,3 +13,5 @@ export { WalletVersionEnum } from './constants';
 
 // export types
 export type { TONShardingID, TonAddressFormat } from './types';
+
+export { TonkitClient } from './TonKitClient';
