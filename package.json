@@ -13,6 +13,7 @@
     "versionup:minor": "npm version minor --git-tag-version false",
     "versionup:major": "npm version major --git-tag-version false",
     "test": "jest",
+    "test:cov": "jest --coverage",
     "test:watch": "jest --watchAll"
   },
   "files": [

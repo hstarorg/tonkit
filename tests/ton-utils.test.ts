@@ -60,6 +60,8 @@ describe('ton-utils', () => {
     Object.entries(caseMap).forEach(([address, shardingID]) => {
       expect(getTONAddressShardingID(address)).toBe(shardingID);
     });
+
+    expect(() => getTONAddressShardingID('')).toThrow('Invalid TON address');
   });
 
   it('getTONAddressWithFormat', () => {
@@ -70,7 +72,7 @@ describe('ton-utils', () => {
       EQ: 'EQD6kZyIwlzI09-C-CmAVP_hmEup9cpJpIMocynF0Gq0KTMQ',
       kQ: 'kQD6kZyIwlzI09-C-CmAVP_hmEup9cpJpIMocynF0Gq0KYia',
       '0Q': '0QD6kZyIwlzI09-C-CmAVP_hmEup9cpJpIMocynF0Gq0KdVf',
-      hex: '0xfa919c88c25cc8d3df82f8298054ffe1984ba9f5ca49a483287329c5d06ab429',
+      hex: '0:fa919c88c25cc8d3df82f8298054ffe1984ba9f5ca49a483287329c5d06ab429',
     };
     expect(getTONAddressWithFormat(source, 'UQ')).toBe(target.UQ);
     expect(getTONAddressWithFormat(source, 'MainnetNonBounceable')).toBe(
@@ -91,5 +93,11 @@ describe('ton-utils', () => {
     expect(getTONAddressWithFormat(source, 'TestnetBounceable')).toBe(
       target.kQ
     );
+
+    expect(getTONAddressWithFormat(source, 'RawString')).toBe(target.hex);
+
+    // cases for invalid format
+    expect(() => getTONAddressWithFormat(source, 'hex' as any)).toThrow();
+    expect(() => getTONAddressWithFormat('source', 'hex' as any)).toThrow();
   });
 });
