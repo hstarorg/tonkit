@@ -9,6 +9,7 @@
     "dev": "tsc --watch",
     "build": "tsc",
     "pub": "npm publish",
+    "code:push": "git add . && git commit -m 'chore(release): release new version' && git push",
     "versionup:patch": "npm version patch --git-tag-version false",
     "versionup:minor": "npm version minor --git-tag-version false",
     "versionup:major": "npm version major --git-tag-version false",
