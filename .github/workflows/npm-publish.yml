@@ -5,16 +5,16 @@ name: Publish packages to NPM(Latest)
 
 on:
   workflow_dispatch:
-    inputs:
-      versionUp:
-        description: 'Version Up Strage'
-        required: true
-        default: 'patch'
-        type: choice
-        options:
-          - patch
-          - minor
-          - major
+    # inputs:
+    #   versionUp:
+    #     description: 'Version Up Strage'
+    #     required: true
+    #     default: 'patch'
+    #     type: choice
+    #     options:
+    #       - patch
+    #       - minor
+    #       - major
 
 jobs:
   publish-npm:
@@ -26,7 +26,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -52,9 +52,8 @@ jobs:
 
       - name: Publish
         uses: changesets/action@v1
-        with:        
-          version: pnpm exec changeset version
-          publish: pnpm exec changeset publish
+        with:
+          publish: pnpm run pub
           commit: '[ci] chore(release)'
           title: '[ci] chore(release)'
         env:
