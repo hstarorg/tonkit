@@ -4,7 +4,9 @@ import {
   JettonWallet,
   TonClient,
   TonClientParameters,
+  TupleReader,
 } from '@ton/ton';
+import { getValidTONAddress } from '../utils/ton-utils';
 
 export type TonChainSDKOptions = {
   endpoint: string;
@@ -38,18 +40,12 @@ export class TonChainSDK {
     accountAddress: Address | string
   ): Promise<bigint> {
     const jettonMasterContract = this.tonClient.open(
-      JettonMaster.create(
-        typeof jettonMaster === 'string'
-          ? Address.parse(jettonMaster)
-          : jettonMaster
-      )
+      JettonMaster.create(getValidTONAddress(jettonMaster))
     );
 
     // 1. find account's jetton wallet
     const jettonWalletAddress = await jettonMasterContract.getWalletAddress(
-      typeof accountAddress === 'string'
-        ? Address.parse(accountAddress)
-        : accountAddress
+      getValidTONAddress(accountAddress)
     );
 
     // 2. open jetton wallet contract
@@ -60,5 +56,35 @@ export class TonChainSDK {
     // 3. get balance
     const balance = await jettonWalletContract.getBalance();
     return balance;
+  }
+
+  /**
+   * Get account's TON balance
+   * @param accountAddress
+   * @returns
+   */
+  async getAccountBalance(accountAddress: Address | string): Promise<bigint> {
+    const balance = await this.tonClient.getBalance(
+      getValidTONAddress(accountAddress)
+    );
+    return balance;
+  }
+
+  /**
+   * Get contract data by contract address and method name
+   * @param contractAddr
+   * @param methodName
+   * @returns
+   */
+  async getContractData(
+    contractAddr: Address | string,
+    methodName: string
+  ): Promise<{ gas_used: number; stack: TupleReader }> {
+    const contractAddress = getValidTONAddress(contractAddr);
+    const methodResult = await this.tonClient.runMethod(
+      contractAddress,
+      methodName
+    );
+    return methodResult;
   }
 }

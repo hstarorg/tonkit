@@ -3,15 +3,16 @@ A toolkit for ton blockchain
 
 ## Functions
 
-### Read
-- [ ] Check the TON balance at wallet address
-- [ ] Check the JETTON balance at wallet address
-- [ ] Reading data from a contract
+### TonChainSDK
+**Read**
+- [x] Check the TON balance at wallet address
+- [x] Get the JETTON balance at wallet address
+- [x] Reading data from a contract
 - [ ] Fetching transactions from a single wallet in batches
 - [ ] Filtering TON tranfer transactions in transaction list
 - [ ] Filtering JETTON tranfer transactions in transaction list
 
-### Write
+**Write**
 
 - [ ] Batch transfer TON with W5 wallet
 - [ ] Batch transfer Jetton with W5 wallet

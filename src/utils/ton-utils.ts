@@ -1,16 +1,20 @@
 import { Address } from '@ton/core';
 import { mnemonicNew, mnemonicToPrivateKey } from '@ton/crypto';
+import { WalletContractV4, WalletContractV5R1 } from '@ton/ton';
 
 import { TONShardingID, TonAddressFormat } from '../types';
-import { WalletContractMap, WalletVersionEnum } from '../constants';
-import { WalletContractV4, WalletContractV5R1 } from '@ton/ton';
+import { WalletVersionEnum } from '../constants/enums';
+import { WalletContractMap } from '../constants/configs';
 
 /**
  * Get a valid TON address, return null if the address is invalid
  * @param address
  * @returns
  */
-export function getValidTONAddress(address: string): Address | null {
+export function getValidTONAddress(address: Address | string): Address | null {
+  if (address instanceof Address) {
+    return address;
+  }
   try {
     return Address.parse(address);
   } catch {
@@ -32,7 +36,9 @@ export function isValidTONAddress(address: string): boolean {
  * @param address
  * @returns
  */
-export function getTONAddressShardingID(address: string): TONShardingID {
+export function getTONAddressShardingID(
+  address: Address | string
+): TONShardingID {
   const validAddress = getValidTONAddress(address);
   if (!validAddress) {
     throw new Error('Invalid TON address');
@@ -143,7 +149,7 @@ export async function generateShardingSubWallets(
  * @returns
  */
 export function getTONAddressWithFormat(
-  address: string,
+  address: Address | string,
   tonAddressFormat: TonAddressFormat // Why use type instead of enum here, ensure the caller can only pass value simple
 ): string {
   const addr = getValidTONAddress(address);
