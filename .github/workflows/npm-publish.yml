@@ -52,8 +52,6 @@ jobs:
         uses: changesets/action@v1
         with:
           version: pnpm exec changeset version
-          commit: '[ci] chore: release version'
-          title: '[ci] chore: release version'
           publish: pnpm run pub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
