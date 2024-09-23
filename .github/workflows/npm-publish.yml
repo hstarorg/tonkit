@@ -15,6 +15,8 @@ on:
     #       - patch
     #       - minor
     #       - major
+env:
+  TONCENTER_TESTNET_API_KEY="{{vars.TONCENTER_TESTNET_API_KEY}}"
 
 jobs:
   publish-npm:
