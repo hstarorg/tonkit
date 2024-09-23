@@ -29,7 +29,7 @@ describe('ton-chain-sdk', () => {
   });
 
   it('get contract data', async () => {
-    const result = await tonChainSDK.getContractData(
+    const result = await tonChainSDK.readContractData(
       'kQCa2efoPKIq7gdpcGZQliz5yxT566m9pKg_pOhH__G5KMCd',
       'get_jetton_data'
     );
