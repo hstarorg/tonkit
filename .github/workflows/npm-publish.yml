@@ -16,7 +16,7 @@ on:
     #       - minor
     #       - major
 env:
-  TONCENTER_TESTNET_API_KEY="{{vars.TONCENTER_TESTNET_API_KEY}}"
+  TONCENTER_TESTNET_API_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
 
 jobs:
   publish-npm:
