@@ -9,9 +9,9 @@ export {
 } from './utils/ton-utils';
 
 // export constants
-export { WalletVersionEnum } from './constants';
+export { WalletVersionEnum, APIV2Endpoints } from './constants';
 
 // export types
 export type { TONShardingID, TonAddressFormat } from './types';
 
-export { TonkitClient } from './TonkitClient';
+export { TonChainSDK, type TonChainSDKOptions } from './sdk/TonChainSDK';

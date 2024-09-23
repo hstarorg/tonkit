@@ -3,6 +3,7 @@ import { mnemonicNew, mnemonicToPrivateKey } from '@ton/crypto';
 
 import { TONShardingID, TonAddressFormat } from '../types';
 import { WalletContractMap, WalletVersionEnum } from '../constants';
+import { WalletContractV4, WalletContractV5R1 } from '@ton/ton';
 
 /**
  * Get a valid TON address, return null if the address is invalid
@@ -86,6 +87,30 @@ export async function generateShardingWallets(
   return wallets;
 }
 
+function createWallet(
+  walletVersion: WalletVersionEnum,
+  publicKey: Buffer,
+  walletId: number
+) {
+  if (walletVersion === WalletVersionEnum.V4) {
+    return WalletContractV4.create({ workchain: 0, publicKey, walletId });
+  } else if (walletVersion === WalletVersionEnum.V5R1) {
+    return WalletContractV5R1.create({
+      publicKey,
+      walletId: {
+        networkGlobalId: -239,
+        context: {
+          walletVersion: 'v5r1',
+          workchain: 0,
+          subwalletNumber: walletId,
+        },
+      },
+    });
+  } else {
+    throw new Error('Invalid wallet version');
+  }
+}
+
 /**
  * Generate 16 sub-wallet with different sharding IDs
  * @param mnemonic
@@ -95,22 +120,13 @@ export async function generateShardingSubWallets(
   walletVersion: WalletVersionEnum,
   mnemonic: string[]
 ): Promise<{ walletId: number; rawAddress: string }[]> {
-  const WalletContract = WalletContractMap[walletVersion];
-  if (!WalletContract) {
-    throw new Error('Invalid wallet version');
-  }
-
   let keyPair = await mnemonicToPrivateKey(mnemonic);
   let walletId = 0;
   const wallets: { walletId: number; rawAddress: string }[] = [];
 
   for (let i = 0; i < 16; i++) {
     while (true) {
-      let wallet = WalletContract.create({
-        workchain: 0,
-        publicKey: keyPair.publicKey,
-        walletId,
-      });
+      let wallet = createWallet(walletVersion, keyPair.publicKey, walletId);
       if (wallet.address.hash[0] >> 4 == i) {
         wallets.push({ walletId, rawAddress: wallet.address.toRawString() });
         break;

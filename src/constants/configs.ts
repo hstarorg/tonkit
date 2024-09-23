@@ -9,17 +9,7 @@ export const WalletContractMap: Record<
   V5R1: WalletContractV5R1,
 };
 
-export const APIEndpoints = {
-  v2: {
-    toncenter: {
-      mainnet: 'https://toncenter.com/api/v2/jsonRPC',
-      testnet: 'https://testnet.toncenter.com/api/v2/jsonRPC',
-    },
-  },
-  v4: {
-    tonhub: {
-      mainnet: 'https://mainnet-v4.tonhubapi.com',
-      sandbox: 'https://sandbox-v4.tonhubapi.com',
-    },
-  },
+export const APIV2Endpoints = {
+  TONCENTER_MAINNET: 'https://toncenter.com/api/v2/jsonRPC',
+  TONCENTER_TESTNET: 'https://testnet.toncenter.com/api/v2/jsonRPC',
 };

@@ -1,3 +1,3 @@
 export { WalletVersionEnum } from './enums';
 
-export { WalletContractMap, APIEndpoints } from './configs';
+export { WalletContractMap, APIV2Endpoints } from './configs';
