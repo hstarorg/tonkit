@@ -1,15 +1,20 @@
 import { Address } from '@ton/core';
 import { mnemonicNew, mnemonicToPrivateKey } from '@ton/crypto';
+import { WalletContractV4, WalletContractV5R1 } from '@ton/ton';
 
 import { TONShardingID, TonAddressFormat } from '../types';
-import { WalletContractMap, WalletVersionEnum } from '../constants';
+import { WalletVersionEnum } from '../constants/enums';
+import { WalletContractMap } from '../constants/configs';
 
 /**
  * Get a valid TON address, return null if the address is invalid
  * @param address
  * @returns
  */
-export function getValidTONAddress(address: string): Address | null {
+export function getValidTONAddress(address: Address | string): Address | null {
+  if (address instanceof Address) {
+    return address;
+  }
   try {
     return Address.parse(address);
   } catch {
@@ -31,7 +36,9 @@ export function isValidTONAddress(address: string): boolean {
  * @param address
  * @returns
  */
-export function getTONAddressShardingID(address: string): TONShardingID {
+export function getTONAddressShardingID(
+  address: Address | string
+): TONShardingID {
   const validAddress = getValidTONAddress(address);
   if (!validAddress) {
     throw new Error('Invalid TON address');
@@ -86,6 +93,30 @@ export async function generateShardingWallets(
   return wallets;
 }
 
+function createWallet(
+  walletVersion: WalletVersionEnum,
+  publicKey: Buffer,
+  walletId: number
+) {
+  if (walletVersion === WalletVersionEnum.V4) {
+    return WalletContractV4.create({ workchain: 0, publicKey, walletId });
+  } else if (walletVersion === WalletVersionEnum.V5R1) {
+    return WalletContractV5R1.create({
+      publicKey,
+      walletId: {
+        networkGlobalId: -239,
+        context: {
+          walletVersion: 'v5r1',
+          workchain: 0,
+          subwalletNumber: walletId,
+        },
+      },
+    });
+  } else {
+    throw new Error('Invalid wallet version');
+  }
+}
+
 /**
  * Generate 16 sub-wallet with different sharding IDs
  * @param mnemonic
@@ -95,22 +126,13 @@ export async function generateShardingSubWallets(
   walletVersion: WalletVersionEnum,
   mnemonic: string[]
 ): Promise<{ walletId: number; rawAddress: string }[]> {
-  const WalletContract = WalletContractMap[walletVersion];
-  if (!WalletContract) {
-    throw new Error('Invalid wallet version');
-  }
-
   let keyPair = await mnemonicToPrivateKey(mnemonic);
   let walletId = 0;
   const wallets: { walletId: number; rawAddress: string }[] = [];
 
   for (let i = 0; i < 16; i++) {
     while (true) {
-      let wallet = WalletContract.create({
-        workchain: 0,
-        publicKey: keyPair.publicKey,
-        walletId,
-      });
+      let wallet = createWallet(walletVersion, keyPair.publicKey, walletId);
       if (wallet.address.hash[0] >> 4 == i) {
         wallets.push({ walletId, rawAddress: wallet.address.toRawString() });
         break;
@@ -127,7 +149,7 @@ export async function generateShardingSubWallets(
  * @returns
  */
 export function getTONAddressWithFormat(
-  address: string,
+  address: Address | string,
   tonAddressFormat: TonAddressFormat // Why use type instead of enum here, ensure the caller can only pass value simple
 ): string {
   const addr = getValidTONAddress(address);
