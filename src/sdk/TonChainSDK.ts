@@ -76,7 +76,7 @@ export class TonChainSDK {
    * @param methodName
    * @returns
    */
-  async getContractData(
+  async readContractData(
     contractAddr: Address | string,
     methodName: string
   ): Promise<{ gas_used: number; stack: TupleReader }> {

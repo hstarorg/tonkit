@@ -5,9 +5,9 @@ A toolkit for ton blockchain
 
 ### TonChainSDK
 **Read**
-- [x] Check the TON balance at wallet address
-- [x] Get the JETTON balance at wallet address
-- [x] Reading data from a contract
+- [x] Check the TON balance at wallet address - `tonchainSDK.getAccountBalance`
+- [x] Get the JETTON balance at wallet address - `tonchainSDK.getAccountJettonBalance`
+- [x] Reading data from a contract - `tonchainSDK.readContractData`
 - [ ] Fetching transactions from a single wallet in batches
 - [ ] Filtering TON tranfer transactions in transaction list
 - [ ] Filtering JETTON tranfer transactions in transaction list
@@ -27,3 +27,8 @@ A toolkit for ton blockchain
 - [x] Judge whether the address is a valid TON address: `isValidTONAddress`
 - [x] Get a valid TON address, return null if the address is invalid: `getValidTONAddress`
 - [x] Get the TON address with specific format: `getTONAddressWithFormat`
+
+## How to develop & publish
+```bash
+pnpm cs
+```
