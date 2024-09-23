@@ -1,5 +1,11 @@
 # tonkit
 
+## 0.3.0
+
+### Minor Changes
+
+- 472f990: Add ton chain sdk, support get ton balance, jetton balance and read contract data
+
 ## 0.1.0
 
 ### Minor Changes
