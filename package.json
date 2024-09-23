@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "tsc --watch",
     "build": "tsc",
-    "pub": "changeset publish",
+    "pub": "npm publish",
     "cs": "changeset",
     "versionup:patch": "npm version patch --git-tag-version false",
     "versionup:minor": "npm version minor --git-tag-version false",
