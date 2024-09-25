@@ -87,4 +87,12 @@ export class TonChainSDK {
     );
     return methodResult;
   }
+
+  async getTransactions(address: Address | string) {
+    const addressObj = getValidTONAddress(address);
+    const transactions = await this.tonClient.getTransactions(addressObj, {
+      limit: 100,
+    });
+    return transactions;
+  }
 }

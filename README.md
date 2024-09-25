@@ -6,6 +6,7 @@ A toolkit for ton blockchain
 ### TonChainSDK
 **Read**
 - [x] Check the TON balance at wallet address - `tonchainSDK.getAccountBalance`
+- [x] Get the JETTON wallet address - `tonchainSDK.getAccountJettonWallet` 
 - [x] Get the JETTON balance at wallet address - `tonchainSDK.getAccountJettonBalance`
 - [x] Reading data from a contract - `tonchainSDK.readContractData`
 - [ ] Fetching transactions from a single wallet in batches

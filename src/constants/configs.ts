@@ -13,3 +13,15 @@ export const APIV2Endpoints = {
   TONCENTER_MAINNET: 'https://toncenter.com/api/v2/jsonRPC',
   TONCENTER_TESTNET: 'https://testnet.toncenter.com/api/v2/jsonRPC',
 };
+
+/**
+ * https://github.com/ton-blockchain/highload-wallet-contract-v3/blob/main/contracts/highload-wallet-v3.func
+ */
+export const HighloadWalletV3Errors = {
+  33: 'invalid_signature',
+  34: 'invalid_subwallet_id',
+  35: 'invalid_created_at',
+  36: 'already_executed',
+  37: 'invalid_message_to_send',
+  38: 'invalid_timeout',
+};
