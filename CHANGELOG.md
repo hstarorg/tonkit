@@ -1,5 +1,12 @@
 # tonkit
 
+## 0.4.0
+
+### Minor Changes
+
+- 45ef070: Add highload wallet helper
+- 88d6661: Add ton transfer or jetton transfer to ton chian sdk
+
 ## 0.3.1
 
 ### Patch Changes
