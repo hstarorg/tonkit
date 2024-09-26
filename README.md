@@ -15,8 +15,7 @@ A toolkit for ton blockchain
 
 **Write**
 
-- [ ] Batch transfer TON with W5 wallet
-- [ ] Batch transfer Jetton with W5 wallet
+- [x] Batch send message with highload wallet v3
 - [ ] Transfer TON
 - [ ] Tranfer JETTON
 
