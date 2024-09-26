@@ -1,21 +1,14 @@
 import { keyPairFromSecretKey } from '@ton/crypto';
-import { TonClient, comment, internal, OutActionSendMsg, SendMode, Address, serializeTuple } from '@ton/ton';
+import { TonClient, internal, OutActionSendMsg, SendMode, Address } from '@ton/ton';
 import {
   APIV2Endpoints,
   createSimpleJettonTransferMessageWithComment,
-  getAccountJettonWallet,
-  HighloadWalletV3Helper,
   HighloadWalletV3QueryId,
+  TonChainSDK,
 } from '../src';
 
 import { config } from 'dotenv';
 config();
-
-function getWalletAddress(publicKey: Buffer, subwalletId: number) {
-  const highloadWalletV3Helper = new HighloadWalletV3Helper(publicKey, subwalletId);
-
-  return highloadWalletV3Helper.address.toString();
-}
 
 async function getTonClient() {
   const tonClient = new TonClient({
@@ -31,21 +24,24 @@ async function getTonClient() {
     secretKey: process.env.WALLET_SECRET_KEY || '',
     subwalletId: 1024,
   };
+
+  const sdk = new TonChainSDK({
+    endpoint: APIV2Endpoints.TONCENTER_TESTNET,
+    apiKey: process.env.TONCENTER_TESTNET_API_KEY,
+  });
+
   const keypair = keyPairFromSecretKey(Buffer.from(demoData.secretKey, 'hex'));
 
   // 1. Get highload wallet address
-  const senderAddress = getWalletAddress(keypair.publicKey, demoData.subwalletId);
-  console.log(senderAddress);
+  const senderAddress = sdk.calculateHighloadWalletV3WalletAddress(keypair.publicKey, demoData.subwalletId);
 
   // 2. Deposit jetton to highload wallet - Manual Deposit
 
   // 3. Send tokens to customers
-  const highloadWalletV3Helper = new HighloadWalletV3Helper(keypair.publicKey, demoData.subwalletId);
-  const tonClient = await getTonClient();
 
   const to = Address.parse('0QDhAkNwnl4a1Djk9hdFsR7LPRTQenB2Jd6AkltcrsN9x_8A');
   const jettonMaster = 'kQCa2efoPKIq7gdpcGZQliz5yxT566m9pKg_pOhH__G5KMCd'; // testnet bitcoin
-  const senderJettonWalletAddress = await getAccountJettonWallet(tonClient, jettonMaster, senderAddress);
+  const senderJettonWalletAddress = await sdk.getAccountJettonWallet(jettonMaster, senderAddress);
 
   console.log(`
 sender address: ${senderAddress.toString()}
@@ -73,7 +69,7 @@ jetton wallet address: ${senderJettonWalletAddress.toString()}
     },
   ];
   // Notice: Need increase query id for each batch send
-  const queryId = HighloadWalletV3QueryId.fromQueryId(BigInt(11));
-  const res = await highloadWalletV3Helper.sendBatch(tonClient, keypair.secretKey, outMsgs, queryId);
+  const queryId = HighloadWalletV3QueryId.fromQueryId(BigInt(12));
+  const res = await sdk.batchSendByHighloadWalletV3({ keypair, subwalletId: demoData.subwalletId }, queryId, outMsgs);
   console.log(res);
 })();
