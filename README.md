@@ -1,6 +1,15 @@
 # tonkit
 A toolkit for ton blockchain
 
+## Install
+
+```bash
+npm install tonkit
+# or
+pnpm add tonkit
+
+```
+
 ## Functions
 
 ### TonChainSDK
