@@ -1,6 +1,6 @@
-import { Address } from '@ton/core';
+import { Address, beginCell, Cell, comment, toNano } from '@ton/core';
 import { mnemonicNew, mnemonicToPrivateKey } from '@ton/crypto';
-import { WalletContractV4, WalletContractV5R1 } from '@ton/ton';
+import { JettonMaster, TonClient, WalletContractV4, WalletContractV5R1 } from '@ton/ton';
 
 import { TONShardingID, TonAddressFormat } from '../types';
 import { WalletVersionEnum } from '../constants/enums';
@@ -36,9 +36,7 @@ export function isValidTONAddress(address: string): boolean {
  * @param address
  * @returns
  */
-export function getTONAddressShardingID(
-  address: Address | string
-): TONShardingID {
+export function getTONAddressShardingID(address: Address | string): TONShardingID {
   const validAddress = getValidTONAddress(address);
   if (!validAddress) {
     throw new Error('Invalid TON address');
@@ -53,7 +51,7 @@ export function getTONAddressShardingID(
  */
 export async function generateWalletWithShardingID(
   walletVersion: WalletVersionEnum,
-  shardingId: TONShardingID
+  shardingId: TONShardingID,
 ): Promise<{ mnemonic: string[]; rawAddress: string }> {
   const WalletContract = WalletContractMap[walletVersion];
   if (!WalletContract) {
@@ -82,22 +80,16 @@ export async function generateWalletWithShardingID(
  * @returns
  */
 export async function generateShardingWallets(
-  walletVersion: WalletVersionEnum
+  walletVersion: WalletVersionEnum,
 ): Promise<{ mnemonic: string[]; rawAddress: string }[]> {
   const promises = new Array(16)
     .fill(0)
-    .map((_, idx) =>
-      generateWalletWithShardingID(walletVersion, idx as TONShardingID)
-    );
+    .map((_, idx) => generateWalletWithShardingID(walletVersion, idx as TONShardingID));
   const wallets = await Promise.all(promises);
   return wallets;
 }
 
-function createWallet(
-  walletVersion: WalletVersionEnum,
-  publicKey: Buffer,
-  walletId: number
-) {
+function createWallet(walletVersion: WalletVersionEnum, publicKey: Buffer, walletId: number) {
   if (walletVersion === WalletVersionEnum.V4) {
     return WalletContractV4.create({ workchain: 0, publicKey, walletId });
   } else if (walletVersion === WalletVersionEnum.V5R1) {
@@ -124,7 +116,7 @@ function createWallet(
  */
 export async function generateShardingSubWallets(
   walletVersion: WalletVersionEnum,
-  mnemonic: string[]
+  mnemonic: string[],
 ): Promise<{ walletId: number; rawAddress: string }[]> {
   let keyPair = await mnemonicToPrivateKey(mnemonic);
   let walletId = 0;
@@ -150,7 +142,7 @@ export async function generateShardingSubWallets(
  */
 export function getTONAddressWithFormat(
   address: Address | string,
-  tonAddressFormat: TonAddressFormat // Why use type instead of enum here, ensure the caller can only pass value simple
+  tonAddressFormat: TonAddressFormat, // Why use type instead of enum here, ensure the caller can only pass value simple
 ): string {
   const addr = getValidTONAddress(address);
   if (!addr) {
@@ -166,23 +158,73 @@ export function getTONAddressWithFormat(
   };
   if (tonAddressFormat === 'MainnetBounceable' || tonAddressFormat === 'EQ') {
     args = { bounceable: true };
-  } else if (
-    tonAddressFormat === 'MainnetNonBounceable' ||
-    tonAddressFormat === 'UQ'
-  ) {
+  } else if (tonAddressFormat === 'MainnetNonBounceable' || tonAddressFormat === 'UQ') {
     args = { bounceable: false };
-  } else if (
-    tonAddressFormat === 'TestnetBounceable' ||
-    tonAddressFormat === 'kQ'
-  ) {
+  } else if (tonAddressFormat === 'TestnetBounceable' || tonAddressFormat === 'kQ') {
     args = { bounceable: true, testOnly: true };
-  } else if (
-    tonAddressFormat === 'TestnetNonBounceable' ||
-    tonAddressFormat === '0Q'
-  ) {
+  } else if (tonAddressFormat === 'TestnetNonBounceable' || tonAddressFormat === '0Q') {
     args = { bounceable: false, testOnly: true };
   } else {
     throw new Error('Invalid TON address format');
   }
   return addr.toString(args);
+}
+
+/**
+ * Create jetton transfer message
+ * https://github.com/ton-blockchain/token-contract/blob/main/wrappers/JettonWallet.ts
+ * @param toAddress
+ * @param comment
+ * @returns
+ */
+export function createJettonTransferMessage(
+  toAddress: Address,
+  jettonAmount: string,
+  responseAddress: Address,
+  customPayload: Cell | null,
+  forwardTonAmount: string,
+  forwardPayload: Cell | null,
+) {
+  // Build jetton transfer cell
+  return beginCell()
+    .storeUint(0xf8a7ea5, 32) // set jetton transfer opcode
+    .storeUint(0, 64) // op, queryId
+    .storeCoins(toNano(jettonAmount)) // jetton amount
+    .storeAddress(toAddress) // jetton recipient
+    .storeAddress(responseAddress) // Excess recipient
+    .storeMaybeRef(customPayload) // custom payload
+    .storeCoins(toNano(forwardTonAmount)) // forward ton amount
+    .storeMaybeRef(forwardPayload) // forward payload
+    .endCell();
+}
+
+/**
+ * Create a simple jetton transfer message with comment
+ * @param toAddress
+ * @param jettonAmount
+ * @param responseAddress
+ * @param commentString
+ * @returns
+ */
+export function createSimpleJettonTransferMessageWithComment(
+  toAddress: Address | string,
+  jettonAmount: string,
+  responseAddress: Address | string,
+  commentString: string,
+) {
+  const toAddressObj = getValidTONAddress(toAddress);
+  const responseAddressObj = getValidTONAddress(responseAddress);
+  return createJettonTransferMessage(toAddressObj, jettonAmount, responseAddressObj, null, '0', comment(commentString));
+}
+
+export async function getAccountJettonWallet(
+  tonClient: TonClient,
+  jettonMaster: Address | string,
+  accountAddress: Address | string,
+) {
+  const jettonMasterContract = tonClient.open(JettonMaster.create(getValidTONAddress(jettonMaster)));
+
+  // find account's jetton wallet
+  const jettonWalletAddress = await jettonMasterContract.getWalletAddress(getValidTONAddress(accountAddress));
+  return jettonWalletAddress;
 }

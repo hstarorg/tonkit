@@ -6,6 +6,10 @@ export {
   generateShardingWallets,
   generateWalletWithShardingID,
   getTONAddressWithFormat,
+  getAccountJettonWallet,
+  // jetton transfer message
+  createJettonTransferMessage,
+  createSimpleJettonTransferMessageWithComment,
 } from './utils/ton-utils';
 
 // export constants
@@ -17,7 +21,4 @@ export type { TONShardingID, TonAddressFormat } from './types';
 
 export { TonChainSDK, type TonChainSDKOptions } from './sdk/TonChainSDK';
 
-export {
-  HighloadWalletV3Helper,
-  HighloadWalletV3QueryId,
-} from './sdk/HighloadWalletV3Helper';
+export { HighloadWalletV3Helper, HighloadWalletV3QueryId } from './sdk/HighloadWalletV3Helper';
