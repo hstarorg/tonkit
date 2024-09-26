@@ -10,15 +10,6 @@ import {
 import { config } from 'dotenv';
 config();
 
-async function getTonClient() {
-  const tonClient = new TonClient({
-    endpoint: APIV2Endpoints.TONCENTER_TESTNET,
-    apiKey: process.env.TONCENTER_TESTNET_API_KEY,
-  });
-
-  return tonClient;
-}
-
 !(async function start() {
   const demoData = {
     secretKey: process.env.WALLET_SECRET_KEY || '',

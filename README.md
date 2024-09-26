@@ -15,9 +15,9 @@ A toolkit for ton blockchain
 
 **Write**
 
-- [x] Batch send message with highload wallet v3
-- [ ] Transfer TON
-- [ ] Tranfer JETTON
+- [x] Batch send message with highload wallet v3 - `tonchainSDK.batchSendByHighloadWalletV3`
+- [x] Transfer TON - `tonchainSDK.transferTON`
+- [x] Tranfer JETTON - `tonchainSDK.transferJETTON`
 
 ### Utils
 - [x] Create a separate wallet for each sharding, you can also specify a sharding to create(Each wallet is a separate mnemonic): `generateShardingWallets`

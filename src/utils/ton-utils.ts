@@ -89,7 +89,7 @@ export async function generateShardingWallets(
   return wallets;
 }
 
-function createWallet(walletVersion: WalletVersionEnum, publicKey: Buffer, walletId: number) {
+function createWallet(walletVersion: WalletVersionEnum, publicKey: Buffer, walletId?: number) {
   if (walletVersion === WalletVersionEnum.V4) {
     return WalletContractV4.create({ workchain: 0, publicKey, walletId });
   } else if (walletVersion === WalletVersionEnum.V5R1) {

@@ -1,10 +1,7 @@
 import { WalletContractV4, WalletContractV5R1 } from '@ton/ton';
 import { WalletVersionEnum } from './enums';
 
-export const WalletContractMap: Record<
-  WalletVersionEnum,
-  typeof WalletContractV4 | typeof WalletContractV5R1
-> = {
+export const WalletContractMap: Record<WalletVersionEnum, typeof WalletContractV4 | typeof WalletContractV5R1> = {
   V4: WalletContractV4,
   V5R1: WalletContractV5R1,
 };
@@ -24,4 +21,15 @@ export const HighloadWalletV3Errors = {
   36: 'already_executed',
   37: 'invalid_message_to_send',
   38: 'invalid_timeout',
+};
+
+/**
+ * https://github.com/ton-blockchain/token-contract/blob/main/ft/jetton-wallet.fc
+ */
+export const JETTONTransferErrors = {
+  705: 'sender address not equals owner address',
+  706: 'not enough jetton balance',
+  707: 'not enough TON balance',
+  708: 'in msg body error',
+  709: 'not enough TON balance',
 };

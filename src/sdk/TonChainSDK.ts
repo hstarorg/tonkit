@@ -2,17 +2,25 @@ import {
   Address,
   beginCell,
   Cell,
+  comment,
+  internal,
   JettonMaster,
   JettonWallet,
+  OpenedContract,
   OutActionSendMsg,
+  SendMode,
   storeStateInit,
   TonClient,
   TonClientParameters,
   TupleReader,
+  WalletContractV4,
+  WalletContractV5R1,
 } from '@ton/ton';
-import { getValidTONAddress } from '../utils/ton-utils';
-import { HighloadWalletV3Helper, HighloadWalletV3QueryId } from './HighloadWalletV3Helper';
 import { KeyPair } from '@ton/crypto';
+
+import { createSimpleJettonTransferMessageWithComment, getValidTONAddress } from '../utils/ton-utils';
+import { HighloadWalletV3Helper, HighloadWalletV3QueryId } from './HighloadWalletV3Helper';
+import { WalletVersionEnum } from '../constants/enums';
 
 export type TonChainSDKOptions = {
   endpoint: string;
@@ -130,6 +138,18 @@ export class TonChainSDK {
   }
 
   /**
+   * Calculate wallet address, support V4, V5
+   * @param walletVersion
+   * @param publicKey
+   * @param walletId
+   * @returns
+   */
+  calculateWalletAddress(walletVersion: WalletVersionEnum, publicKey: Buffer, walletId?: number) {
+    const wallet = this._createWallet(walletVersion, publicKey, walletId);
+    return wallet.address;
+  }
+
+  /**
    * Send batch messages by highload wallet v3
    * @param serderInfo
    * @param queryId
@@ -145,6 +165,99 @@ export class TonChainSDK {
     const highloadWalletV3Helper = new HighloadWalletV3Helper(keypair.publicKey, subwalletId);
 
     return await highloadWalletV3Helper.sendBatch(this.tonClient, keypair.secretKey, outMsgs, queryId);
+  }
+
+  async transferTON(
+    wallerVersion: WalletVersionEnum,
+    keypair: KeyPair,
+    to: Address | string,
+    tonAmount: string,
+    commentString?: string,
+  ) {
+    const toAddress = getValidTONAddress(to);
+    const wallet = this._createWallet(wallerVersion, keypair.publicKey);
+    const walletContract = this.tonClient.open(wallet);
+
+    const seqno = await walletContract.getSeqno();
+
+    const transferArgs = {
+      seqno,
+      secretKey: keypair.secretKey,
+      messages: [
+        internal({
+          to: toAddress,
+          value: tonAmount,
+          body: commentString ? comment(commentString) : beginCell().endCell(),
+        }),
+      ],
+      sendMode: SendMode.PAY_GAS_SEPARATELY,
+    };
+
+    if (wallerVersion === WalletVersionEnum.V4) {
+      return await (walletContract as OpenedContract<WalletContractV4>).sendTransfer(transferArgs);
+    } else if (wallerVersion === WalletVersionEnum.V5R1) {
+      return await (walletContract as OpenedContract<WalletContractV5R1>).sendTransfer(transferArgs);
+    }
+  }
+
+  async transferJETTON(
+    wallerVersion: WalletVersionEnum,
+    keypair: KeyPair,
+    to: Address | string,
+    jettonMaster: Address | string,
+    jetttonAmount: string,
+    tonAmount: string,
+
+    commentString?: string,
+  ) {
+    const toAddress = getValidTONAddress(to);
+    const wallet = this._createWallet(wallerVersion, keypair.publicKey);
+    const walletContract = this.tonClient.open(wallet);
+
+    const seqno = await walletContract.getSeqno();
+
+    const senderJettonWalletAddress = await this.getAccountJettonWallet(jettonMaster, wallet.address);
+
+    const transferArgs = {
+      seqno,
+      secretKey: keypair.secretKey,
+      messages: [
+        internal({
+          to: senderJettonWalletAddress,
+          value: tonAmount,
+          body: createSimpleJettonTransferMessageWithComment(to, jetttonAmount, wallet.address, commentString),
+        }),
+      ],
+      sendMode: SendMode.PAY_GAS_SEPARATELY,
+    };
+
+    if (wallerVersion === WalletVersionEnum.V4) {
+      return await (walletContract as OpenedContract<WalletContractV4>).sendTransfer(transferArgs);
+    } else if (wallerVersion === WalletVersionEnum.V5R1) {
+      return await (walletContract as OpenedContract<WalletContractV5R1>).sendTransfer(transferArgs);
+    }
+  }
+
+  private _createWallet(walletVersion: WalletVersionEnum, publicKey: Buffer, walletId?: number) {
+    if (walletVersion === WalletVersionEnum.V4) {
+      return WalletContractV4.create({ workchain: 0, publicKey, walletId });
+    } else if (walletVersion === WalletVersionEnum.V5R1) {
+      return WalletContractV5R1.create({
+        publicKey,
+        walletId: walletId
+          ? {
+              networkGlobalId: -239,
+              context: {
+                walletVersion: 'v5r1',
+                workchain: 0,
+                subwalletNumber: walletId,
+              },
+            }
+          : undefined,
+      });
+    } else {
+      throw new Error('Invalid wallet version');
+    }
   }
 
   async getTransactions(address: Address | string) {
