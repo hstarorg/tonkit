@@ -1,6 +1,6 @@
 {
   "name": "tonkit",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A toolkit for ton blockchain",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "tsc --watch",
     "build": "tsc",
-    "pub": "changeset publish",
+    "pub": "npm publish",
     "cs": "changeset",
     "versionup:patch": "npm version patch --git-tag-version false",
     "versionup:minor": "npm version minor --git-tag-version false",

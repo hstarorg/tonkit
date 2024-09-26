@@ -1,5 +1,11 @@
 # tonkit
 
+## 0.3.1
+
+### Patch Changes
+
+- 5acd658: Optimize npm package
+
 ## 0.3.0
 
 ### Minor Changes
