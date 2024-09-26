@@ -6,6 +6,7 @@ A toolkit for ton blockchain
 ### TonChainSDK
 **Read**
 - [x] Check the TON balance at wallet address - `tonchainSDK.getAccountBalance`
+- [x] Get the JETTON wallet address - `tonchainSDK.getAccountJettonWallet` 
 - [x] Get the JETTON balance at wallet address - `tonchainSDK.getAccountJettonBalance`
 - [x] Reading data from a contract - `tonchainSDK.readContractData`
 - [ ] Fetching transactions from a single wallet in batches
@@ -14,10 +15,9 @@ A toolkit for ton blockchain
 
 **Write**
 
-- [ ] Batch transfer TON with W5 wallet
-- [ ] Batch transfer Jetton with W5 wallet
-- [ ] Transfer TON
-- [ ] Tranfer JETTON
+- [x] Batch send message with highload wallet v3 - `tonchainSDK.batchSendByHighloadWalletV3`
+- [x] Transfer TON - `tonchainSDK.transferTON`
+- [x] Tranfer JETTON - `tonchainSDK.transferJETTON`
 
 ### Utils
 - [x] Create a separate wallet for each sharding, you can also specify a sharding to create(Each wallet is a separate mnemonic): `generateShardingWallets`
