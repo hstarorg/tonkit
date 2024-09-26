@@ -1,6 +1,6 @@
 {
   "name": "tonkit",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "A toolkit for ton blockchain",
   "main": "dist/index.js",
   "module": "dist/index.js",
