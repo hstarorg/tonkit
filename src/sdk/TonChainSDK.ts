@@ -28,9 +28,13 @@ export type TonChainSDKOptions = {
 };
 
 export class TonChainSDK {
-  private tonClient: TonClient;
+  private _tonClient: TonClient;
   constructor(private readonly options: TonChainSDKOptions) {
     this._initTonClient();
+  }
+
+  getTonClient() {
+    return this._tonClient;
   }
 
   private _initTonClient(): void {
@@ -40,11 +44,11 @@ export class TonChainSDK {
     if (this.options.apiKey) {
       params.apiKey = this.options.apiKey;
     }
-    this.tonClient = new TonClient(params);
+    this._tonClient = new TonClient(params);
   }
 
   async getAccountJettonWallet(jettonMaster: Address | string, accountAddress: Address | string) {
-    const jettonMasterContract = this.tonClient.open(JettonMaster.create(getValidTONAddress(jettonMaster)));
+    const jettonMasterContract = this._tonClient.open(JettonMaster.create(getValidTONAddress(jettonMaster)));
 
     // find account's jetton wallet
     const jettonWalletAddress = await jettonMasterContract.getWalletAddress(getValidTONAddress(accountAddress));
@@ -94,7 +98,7 @@ export class TonChainSDK {
     const jettonWalletAddress = await this.getAccountJettonWallet(jettonMaster, accountAddress);
 
     // 2. open jetton wallet contract
-    const jettonWalletContract = this.tonClient.open(JettonWallet.create(jettonWalletAddress));
+    const jettonWalletContract = this._tonClient.open(JettonWallet.create(jettonWalletAddress));
 
     // 3. get balance
     const balance = await jettonWalletContract.getBalance();
@@ -107,7 +111,7 @@ export class TonChainSDK {
    * @returns
    */
   async getAccountBalance(accountAddress: Address | string): Promise<bigint> {
-    const balance = await this.tonClient.getBalance(getValidTONAddress(accountAddress));
+    const balance = await this._tonClient.getBalance(getValidTONAddress(accountAddress));
     return balance;
   }
 
@@ -122,7 +126,7 @@ export class TonChainSDK {
     methodName: string,
   ): Promise<{ gas_used: number; stack: TupleReader }> {
     const contractAddress = getValidTONAddress(contractAddr);
-    const methodResult = await this.tonClient.runMethod(contractAddress, methodName);
+    const methodResult = await this._tonClient.runMethod(contractAddress, methodName);
     return methodResult;
   }
 
@@ -164,7 +168,7 @@ export class TonChainSDK {
     const { keypair, subwalletId } = serderInfo;
     const highloadWalletV3Helper = new HighloadWalletV3Helper(keypair.publicKey, subwalletId);
 
-    return await highloadWalletV3Helper.sendBatch(this.tonClient, keypair.secretKey, outMsgs, queryId);
+    return await highloadWalletV3Helper.sendBatch(this._tonClient, keypair.secretKey, outMsgs, queryId);
   }
 
   async transferTON(
@@ -176,7 +180,7 @@ export class TonChainSDK {
   ) {
     const toAddress = getValidTONAddress(to);
     const wallet = this._createWallet(wallerVersion, keypair.publicKey);
-    const walletContract = this.tonClient.open(wallet);
+    const walletContract = this._tonClient.open(wallet);
 
     const seqno = await walletContract.getSeqno();
 
@@ -210,9 +214,8 @@ export class TonChainSDK {
 
     commentString?: string,
   ) {
-    const toAddress = getValidTONAddress(to);
     const wallet = this._createWallet(wallerVersion, keypair.publicKey);
-    const walletContract = this.tonClient.open(wallet);
+    const walletContract = this._tonClient.open(wallet);
 
     const seqno = await walletContract.getSeqno();
 
@@ -262,7 +265,7 @@ export class TonChainSDK {
 
   async getTransactions(address: Address | string) {
     const addressObj = getValidTONAddress(address);
-    const transactions = await this.tonClient.getTransactions(addressObj, {
+    const transactions = await this._tonClient.getTransactions(addressObj, {
       limit: 3,
       archival: true,
     });
