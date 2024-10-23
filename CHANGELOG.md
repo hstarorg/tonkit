@@ -1,5 +1,11 @@
 # tonkit
 
+## 0.5.0
+
+### Minor Changes
+
+- 6ab1cbc: Return ton client from sdk
+
 ## 0.4.0
 
 ### Minor Changes
