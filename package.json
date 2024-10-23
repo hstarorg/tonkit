@@ -27,16 +27,16 @@
   "author": "hstarorg",
   "license": "MIT",
   "devDependencies": {
-    "@changesets/cli": "^2.27.8",
-    "@types/jest": "^29.5.12",
+    "@changesets/cli": "^2.27.9",
+    "@types/jest": "^29.5.14",
     "dotenv": "^16.4.5",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
-    "typescript": "^5.5.4"
+    "typescript": "^5.6.3"
   },
   "dependencies": {
-    "@ton/core": "^0.57.0",
+    "@ton/core": "^0.59.0",
     "@ton/crypto": "^3.3.0",
-    "@ton/ton": "^15.0.0"
+    "@ton/ton": "^15.1.0"
   }
 }
