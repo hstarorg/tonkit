@@ -1,5 +1,12 @@
 # tonkit
 
+## 0.6.0
+
+### Minor Changes
+
+- 8acdb71: Optimize and upgrade deps
+- 8acdb71: Update getAccountJettonWalletOffline, support pass jettonWalletCode
+
 ## 0.5.0
 
 ### Minor Changes
