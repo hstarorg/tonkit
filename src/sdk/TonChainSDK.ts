@@ -173,11 +173,12 @@ export class TonChainSDK {
     serderInfo: { keypair: KeyPair; subwalletId: number },
     queryId: HighloadWalletV3QueryId,
     outMsgs: OutActionSendMsg[],
+    value: bigint = BigInt(0),
   ) {
     const { keypair, subwalletId } = serderInfo;
     const highloadWalletV3Helper = new HighloadWalletV3Helper(keypair.publicKey, subwalletId);
 
-    return await highloadWalletV3Helper.sendBatch(this._tonClient, keypair.secretKey, outMsgs, queryId);
+    return await highloadWalletV3Helper.sendBatch(this._tonClient, keypair.secretKey, outMsgs, queryId, value);
   }
 
   async transferTON(
