@@ -1,20 +1,4 @@
-export type TONShardingID =
-  | 0
-  | 1
-  | 2
-  | 3
-  | 4
-  | 5
-  | 6
-  | 7
-  | 8
-  | 9
-  | 10
-  | 11
-  | 12
-  | 13
-  | 14
-  | 15;
+export type TONShardingID = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15;
 
 /**
  * TON address format
@@ -30,3 +14,9 @@ export type TonAddressFormat =
   | 'TestnetNonBounceable' //   Address format for testnet, non-bounceable
   | '0Q' // alias as TestnetNonBounceable
   | 'RawString'; // Raw string format
+
+export type JettonData = {
+  totalSupply: bigint;
+  mintable: boolean;
+  adminAddress: string;
+};
