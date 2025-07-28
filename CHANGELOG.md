@@ -1,5 +1,11 @@
 # tonkit
 
+## 0.6.1
+
+### Patch Changes
+
+- 1dcaac2: Support pass value to send batch
+
 ## 0.6.0
 
 ### Minor Changes
