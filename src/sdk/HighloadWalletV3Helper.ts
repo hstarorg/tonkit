@@ -22,15 +22,23 @@ export class HighloadWalletV3Helper {
     return this.highloadWalletV3.address;
   }
 
-  async sendBatch(tonClient: TonClient, secretKey: Buffer, outMsgs: OutActionSendMsg[], queryId: HighloadQueryId) {
+  async sendBatch(
+    tonClient: TonClient,
+    secretKey: Buffer,
+    outMsgs: OutActionSendMsg[],
+    queryId: HighloadQueryId,
+    value: bigint,
+  ) {
     const walletContract = tonClient.open(this.highloadWalletV3);
+    const currentSeconds = Math.floor(Date.now() / 1000);
     return await walletContract.sendBatch(
       secretKey,
       outMsgs,
       this.subwalletId,
       queryId,
       this.timeout,
-      Math.floor(Date.now() / 1000) - 60,
+      currentSeconds - 60,
+      value,
     );
   }
 }
